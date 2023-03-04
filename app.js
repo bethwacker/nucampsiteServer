@@ -2,16 +2,15 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
+const passport = require('passport');
+const config = require('./config');
 
-
-const campsiteRouter = require('./routes/campsiteRouter');
-const promotionRouter = require('./routes/promotionRouter');
-const partnerRouter = require('./routes/partnerRouter');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-const passport = require('passport');
-const config = require('./config');
+const campsiteRouter = require('./routes/campsiteRouter');
+const promotionRouter = require('./routes/promotionRouter');
+const partnerRouter = require('./routes/partnerRouter');
 
 
 const mongoose = require('mongoose');
@@ -38,27 +37,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(passport.initialize());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-
-
-function auth(req, res, next) {
-  console.log(req.user);
-
-  if (!req.user) {
-      const err = new Error('You are not authenticated!');                    
-      err.status = 401;
-      return next(err);
-  } else {
-      return next();
-  }
-}
-
-  
-
-app.use(auth);
 
 app.use(express.static(path.join(__dirname, 'public')));
 

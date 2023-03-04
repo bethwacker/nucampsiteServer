@@ -4,6 +4,7 @@ const User = require('./models/user');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+const createError = require('http-errors');
 
 const config = require('./config.js');
 
@@ -36,5 +37,16 @@ exports.jwtPassport = passport.use(
         }
     )
 );
+exports.verifyAdmin = (req, res, next) => {
+    if (req.user.admin) {
+      // If the user is an admin, allow the request to proceed
+      return next();
+    } else {
+      // If the user is not an admin, create an error and pass it to the error handler
+      const err = createError(403, 'You are not authorized to perform this operation!');
+      return next(err);
+    }
+  };
+  
 
 exports.verifyUser = passport.authenticate('jwt', {session: false});
